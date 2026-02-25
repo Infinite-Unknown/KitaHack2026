@@ -6,7 +6,16 @@ import threading
 import numpy as np
 import os
 import customtkinter as ctk
+import tensorflow as tf
 from google import genai
+
+# Initialize Local TF Keras Model
+tf_model = None
+try:
+    tf_model = tf.keras.models.load_model("csi_fall_model.keras")
+    print("Loaded TF Keras Fall Model successfully.")
+except Exception as e:
+    print(f"Warning: Could not load TF Keras model: {e}")
 
 # ================= Configuration =================
 ESP32_IPS = {
@@ -37,7 +46,7 @@ node_last_seen = {
 }
 
 # --- NEW: Adjustable Global Setting ---
-ANOMALY_THRESHOLD = 40  
+ANOMALY_THRESHOLD = 80  # ML Fall Certainty Threshold %
 # --------------------------------------
 
 def update_firebase(status_string):
@@ -65,26 +74,43 @@ last_gemini_call = 0
 COOLDOWN_SECONDS = 15
 
 def detect_anomaly_local():
-    global last_gemini_call, ANOMALY_THRESHOLD
+    global last_gemini_call, ANOMALY_THRESHOLD, tf_model
     if time.time() - last_gemini_call < COOLDOWN_SECONDS:
         return False 
+        
+    if not tf_model:
+        return False
 
-    for node, buf in csi_buffers.items():
-        if len(buf) < 20: continue
+    buf1 = csi_buffers.get("ESP32_NODE_1", [])
+    buf2 = csi_buffers.get("ESP32_NODE_2", [])
+    buf3 = csi_buffers.get("ESP32_NODE_3", [])
+    
+    if len(buf1) < 20 or len(buf2) < 20 or len(buf3) < 20:
+        return False
         
-        recent = np.array(buf[-10:])[:, :10] 
-        valid_recent = recent[recent > 15]
-        if len(valid_recent) == 0: continue
-            
-        recent_max = np.max(valid_recent)
-        recent_min = np.min(valid_recent)
+    window = []
+    # Grab the last 20 frames chronologically
+    for i in range(20, 0, -1):
+        # Flatten the 3 nodes into a 30-feature vector for the ML model
+        frame = list(buf1[-i]) + list(buf2[-i]) + list(buf3[-i])
+        window.append(frame)
         
-        # Uses the CTk slider threshold instead of hardcoded 40
-        if (recent_max - recent_min) > ANOMALY_THRESHOLD:
+    # Standardize scale
+    input_data = np.array([window], dtype=np.float32) / 255.0
+    
+    try:
+        # Predict using full Keras model
+        prediction = tf_model.predict(input_data, verbose=0)
+        fall_prob = prediction[0][0] * 100.0 # Convert to percentage
+        
+        if fall_prob >= ANOMALY_THRESHOLD:
             current_time_str = time.strftime("%H:%M:%S", time.localtime())
-            print(f"\n[{current_time_str}] DEBUG: Local Anomaly! Node {node} saw a sharp jump from {recent_max} to {recent_min} (Threshold: {int(ANOMALY_THRESHOLD)})")
+            print(f"\n[{current_time_str}] DEBUG: Edge ML Anomaly! Fall Probability: {fall_prob:.1f}% (Threshold: {int(ANOMALY_THRESHOLD)}%)")
             last_gemini_call = time.time()
             return True
+            
+    except Exception as e:
+        pass
             
     return False
 
@@ -215,16 +241,16 @@ def build_gui():
     title_label = ctk.CTkLabel(app, text="SentinAI Backend Dashboard", font=ctk.CTkFont(size=20, weight="bold"))
     title_label.pack(pady=(20, 10))
     
-    info_label = ctk.CTkLabel(app, text="Adjust Local Anomaly Sensitivity\n(Lower = More Sensitive to Small Movements)")
+    info_label = ctk.CTkLabel(app, text="Edge ML Certainty Threshold\n(Lower = Triggers easier on uncertain movements)")
     info_label.pack(pady=(0, 20))
     
-    slider_val_label = ctk.CTkLabel(app, text=f"Current Threshold: {ANOMALY_THRESHOLD}", font=ctk.CTkFont(size=14, weight="bold"), text_color="#00FFAA")
+    slider_val_label = ctk.CTkLabel(app, text=f"Trigger Certainty: {ANOMALY_THRESHOLD}%", font=ctk.CTkFont(size=14, weight="bold"), text_color="#00FFAA")
     slider_val_label.pack()
 
     def update_threshold(value):
         global ANOMALY_THRESHOLD
         ANOMALY_THRESHOLD = int(value)
-        slider_val_label.configure(text=f"Current Threshold: {ANOMALY_THRESHOLD}")
+        slider_val_label.configure(text=f"Trigger Certainty: {ANOMALY_THRESHOLD}%")
         
     slider = ctk.CTkSlider(app, from_=10, to=100, command=update_threshold)
     slider.set(ANOMALY_THRESHOLD)

@@ -23,6 +23,8 @@ is_recording = False
 current_label = "unknown"
 recorded_data = []
 frames_recorded = 0
+current_fps = 0.0
+last_frame_time = 0
 
 def http_poller(app):
     """Continuously polls ESP32s in the background, only saves data if recording is active"""
@@ -57,9 +59,17 @@ def http_poller(app):
                 recorded_data.append(snapshot)
                 frames_recorded += 1
                 
-                # Update UI periodically so it doesn't freeze (Tkinter safe thread call)
-                if frames_recorded % 5 == 0:
-                    app.after(0, app.update_status, f"🔴 Recording '{current_label}'... ({frames_recorded} frames)", "red")
+                # Calculate FPS
+                now = time.time()
+                if last_frame_time > 0:
+                    delta = now - last_frame_time
+                    if delta > 0:
+                        current_fps = 1.0 / delta
+                last_frame_time = now
+                
+                # Update UI periodically so it doesn't freeze
+                if frames_recorded % 3 == 0:
+                    app.after(0, app.update_status, f"🔴 Recording '{current_label}'... ({frames_recorded} frames | {current_fps:.0f} fps)", "red")
                 
         time.sleep(0.05) # Poll ~20 times a second
 
@@ -119,13 +129,14 @@ class DataCollectorApp(ctk.CTk):
         self.action_menu = ctk.CTkOptionMenu(
             self.label_frame, 
             variable=self.action_var,
-            values=["falling", "walking", "sitting", "standing", "waving", "empty_room"]
+            values=["falling", "walking", "sitting", "standing", "waving", "empty_room", "nothing_moving", "Custom"],
+            command=self.on_label_change
         )
         self.action_menu.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
-        # Custom tag entry box
-        self.custom_entry = ctk.CTkEntry(self.label_frame, placeholder_text="Or type custom label here...")
-        self.custom_entry.grid(row=1, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="ew")
+        # Custom tag entry box (hidden by default)
+        self.custom_entry = ctk.CTkEntry(self.label_frame, placeholder_text="Type custom label here...")
+        # Don't grid it yet — only shown when "Custom" is selected
 
         # Start / Stop Buttons
         self.btn_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -142,8 +153,14 @@ class DataCollectorApp(ctk.CTk):
         self.status_label = ctk.CTkLabel(self, text="Ready to record. Select a label and press Start.", font=ctk.CTkFont(size=14))
         self.status_label.grid(row=3, column=0, padx=20, pady=20)
 
+    def on_label_change(self, choice):
+        if choice == "Custom":
+            self.custom_entry.grid(row=1, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="ew")
+        else:
+            self.custom_entry.grid_forget()
+
     def start_recording(self):
-        global is_recording, current_label, recorded_data, frames_recorded
+        global is_recording, current_label, recorded_data, frames_recorded, current_fps, last_frame_time
         
         # Priority to custom entry if filled
         custom_val = self.custom_entry.get().strip()
@@ -152,8 +169,10 @@ class DataCollectorApp(ctk.CTk):
         else:
             current_label = self.action_var.get()
 
-        recorded_data = [] # Clear buffer
+        recorded_data = []
         frames_recorded = 0
+        current_fps = 0.0
+        last_frame_time = 0
         is_recording = True
 
         self.start_btn.configure(state="disabled")
