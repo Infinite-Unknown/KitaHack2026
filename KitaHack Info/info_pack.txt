@@ -1,0 +1,318 @@
+Google Developer Groups 
+On Campus 
+Malaysia
+KitaHack 2026 Handbook
+Table of Contents
+Table of Contents2
+Introduction3
+Event Timeline4
+Key Dates4
+Google Tech Workshops4
+Problem Statement5
+Background5
+Challenge5
+Key Considerations5
+Rules & Regulations6
+Eligibility6
+Participation6
+Submission Guidelines6
+Submission Criteria7
+AI Usage Requirement7
+Technical Stack7
+Awards7
+Liability8
+Data Protection and Privacy8
+Data Sharing and Consent8
+Intellectual Property8
+Judging Criteria9
+Evaluation Criteria Distribution9
+Evaluation Criteria Breakdown for Preliminary Round9
+Submission11
+Submission Information11
+Submission Components11
+Google Forms Submission Structure12
+First Part: Team Details12
+Second Part: Project Details12
+Third Part: Project Evaluation12
+Project Setup12
+Implementation12
+Feedback / Testing / Iteration12
+Success And Completion Of Solution13
+Scalability / Next Steps13
+Prizes & Awards14
+Conclusion15
+Introduction
+Welcome to KitaHack 2026! 🎉
+This hackathon brings together creative minds, tech enthusiasts, and changemakers 🤖 to develop meaningful AI solutions that address the Sustainable Development Goals (SDGs) through Google's technology stack 💡. Whether you're just starting out 🚀 or you're a seasoned developer, this is your chance to grow, connect, and bring your ideas to life!
+This info pack contains everything you need to know, from competition rules and evaluation criteria to how you'll submit your project.
+Make sure to go through it thoroughly so you're all set for an awesome hackathon journey! 🎯
+We can't wait to see what you'll create, let's make something incredible happen! 🔥
+Event Timeline
+Key Dates
+Event Timeline
+Date
+KitaHack 2026 Info Session
+5th January 2026
+Registration Opens
+5th January - 15th January 
+Preliminary Round Submission Deadline
+28th February 2026
+Preliminary Round Evaluation Period
+1st March to 7th March 2026
+Top 10 Finalists Announcement
+9th March 2026
+Refine Solution & Mentoring Session *
+10th March - 17th March
+Pre Demo Day 
+28th March 2026
+Demo Day
+29th March 2026
+^ Mentoring Session* subject to availability of the Mentors
+ Google Tech Workshops
+Workshop
+Date / Time
+Host
+Mode
+Link
+Web Development & APIs Workshop
+January 31th 2026
+APU
+Virtual
+TBA
+App Development Workshop
+February 1st 2026
+MMU
+Virtual
+TBA
+Firebase Workshop
+February 7th 2026
+APU
+Hybrid*
+TBA
+Flutter Workshop 
+February 8th 2026
+Sunway
+Virtual
+TBA
+Gemini AI Workshop
+February 14th 2026
+APU
+Hybrid
+TBA
+Google Cloud Platform Workshop
+February 15th 2026
+APU
+Hybrid*
+TBA
+From Zero to Hero: KitaHack 2026 Champions
+TBC
+UM
+Virtual
+TBA
+Pitch Perfect
+TBD
+TBD
+TBD
+TBD
+^ Registration Link for the workshop will be updated once the registration site is live.
+^ Hybrid* means the workshop will be held in person for students at the host university     while being accessible virtually for external participants.
+^ Additional Workshops will be held in collaboration with KitaHack and GDG on Campus Malaysia, so stay tuned!
+Problem Statement
+Practical AI Solutions for Real-World Impact Using Google Technology
+Background
+The United Nations Sustainable Development Goals (SDGs) highlight some of the most pressing global challenges, including poverty, quality education, healthcare access, climate change, and sustainable urban development. Despite ongoing efforts, many existing solutions lack scalability, efficiency, and accessibility, making it difficult to create lasting, widespread impact.
+Technology has the potential to transform how we tackle these challenges by enhancing efficiency, decision-making, and resource optimization. While Artificial Intelligence (AI) can be a powerful tool, impactful solutions can also be built using other innovative technologies, such as cloud computing, real-time data analytics, IoT, blockchain, and mobile applications.
+Challenge
+How can we develop innovative, scalable, and sustainable AI-powered solutions that address real-world problems aligned with one or more SDGs using Google's technology stack, moving from theoretical knowledge to deployable applications that create measurable community impact?
+Participants are encouraged to experiment with Google's advanced capabilities in ML, language AI, visual computing, and analytics. To combine these with Google's cloud infrastructure to create applications that drive genuine progress toward social and environmental goals.
+Key Considerations
+Does the solution incorporate AI? If so, how does it enhance efficiency, decision-making, or automation?
+How does the solution ensure accessibility, affordability, and scalability, especially in underserved communities?
+What role can Google technologies (e.g., Google Cloud, Firebase, Google Maps API, TensorFlow) play in enhancing the solution?
+How does the solution align with ethical and sustainable development principles?
+Rules & Regulations
+Eligibility
+Teams must have at least one GDGoC Member from a Malaysian chapter : 
+1. Asia Pacific University of Technology & Innovation - Kuala Lumpur, Malaysia 
+2. International Islamic University Malaysia - Selangor, Malaysia 
+3. Monash University Malaysia - Selangor, Malaysia 
+4. Multimedia University - Selangor, Malaysia 
+5. Sunway University - Selangor, Malaysia
+6. Tunku Abdul Rahman University of Management and Technology
+ - Kuala Lumpur, Malaysia
+7. Universiti Malaya - Kuala Lumpur, Malaysia
+8. Universiti Putra Malaysia - Selangor, Malaysia
+9. Universiti Sains Malaysia - Penang, Malaysia 
+10. Universiti Teknologi Malaysia - Johor Bahru, Malaysia
+Judges, Mentors, Sponsors, and Privileged Individuals are not eligible to participate.
+Participation
+Solo participation or teams of up to 4 members only.
+Team / Solo Participation Guidelines:
+A participant registered as solo, cannot join another registered team.
+Switching members is prohibited unless approved by organizers:
+Please contact Jia Xin (+60 10-301 3940) or Wai Ying (+60 16-901 8677) for approval.
+Once the registration deadline has passed, team changes will no longer be allowed.
+Participants may form teams with members from different institutions, as long as at least one team member is a GDGoC member from a Malaysian chapter.
+Registration to participate in KitaHack 2026 is FOC.
+The platform used throughout the event will be discord or bevy platform.
+Any kind of tampering with the competition’s registration, flow and/or result in any way will result in the participant/team being disqualified from Kitahack.
+Any form of harassment, discrimination, or disruptive behaviour towards other participants, mentors, judges, or organizers will cause immediate disqualification.
+Submission Guidelines
+The submitted solution must incorporate Artificial Intelligence (AI) Technology as a key component and address one or more United Nations Sustainable Development Goals (SDGs).
+All work on the project must be completed during the official duration of the hackathon.
+The submission and all its components must be the team's original work. While referencing existing solutions is permitted, direct plagiarism of ideas, code, or designs is strictly prohibited.
+Participants are not allowed to plagiarize the ideas, work, or submissions of other teams.
+All submissions must be made before the specified deadline. Any incomplete, illegible, misdirected, or late submissions will not be considered.
+Submissions that contain or promote dangerous, vulgar, offensive, indecent, illegal, racist, plagiarized, cruel, or fraudulent content—or that infringe on the rights or copyright of others—will cause immediate disqualification.
+ Submission Criteria
+Your final submission must include the implementation of an AI technology (such as Google AI Studio, Vertex AI, Gemini, or other AI solutions) along with the integration of a separate Google technology (Google Technology outside of the incorporated Google AI or any other AI Technology) to enhance functionality.
+Your submission MUST contain ALL the components below: o Incorporate AI Technology
+Google AI Technology - such as Google AI Studio, Vertex AI, Gemini (Recommended)
+Other AI Technology - you will receive only half of the total marks
+for AI implementation.
+Incorporate Google Technology (Any Google Technology outside Google AI)
+Firebase, GCP, Google Maps API, Android Studio, etc.
+Preliminary Round Requirements
+At a minimum, your submission should be a low-code solution.
+A semi-working prototype is strongly encouraged.
+No-code submissions will not be accepted.
+Final Round Requirements
+A working prototype is expected from the participants
+The final submission should be an extension and improvement of your preliminary round entry.
+AI Usage Requirement
+All submissions must incorporate AI and exclusively utilize Google AI technologies only, i.e. Google AI Studio, Vertex AI, Gemini or other Google AI Technologies.
+Use of non-Google related AI models for core AI functionalities will result in
+significantly reduced scoring.
+Technical Stack
+Each project must incorporate at least one Google developer technology, such as Google Cloud Platform services, Firebase, Google Maps API, Google Workspace, TensorFlow, or any other Google-related tools or APIs. The chosen technology should be significant and integral to the functionality or innovation of the project.
+Incorporating AI (i.e. Gemini) into the solution is mandatory. Projects that effectively integrate AI should enhance functionality, scalability, or impact will be strongly encouraged and valued. AI should be used to meaningfully improve the solution’s effectiveness.
+Failure to integrate at least one Google technology may cause disqualification at the discretion of the organizers. Teams are encouraged to highlight how Google technologies enhance their project during their submission.
+Awards
+All awards and prizes must be shared among all team members as per their mutual agreement.
+Prizes are non-transfierable and can only be claimed by the designated winner(s).
+The judges' and organizers' decisions regarding the selection of winners are final and binding. No appeals, disputes, or reconsiderations will be entertained.
+Liability
+The Kitahack 2026 Organizing Committee reserves the right to modify the rules and regulations without prior notice. Participants hold the responsibility to constantly check on communication channels should there be any changes in the rules and regulations.
+The Kitahack 2026 Organizing Committee reserves the right, at their sole discretion, to eliminate or disqualify any participants or teams regarded as being in breach of these rules and regulations.
+Participation of KitaHack 2026 is at the participant’s sole risk. To the extent permitted by law, the Organizing Committee will not accept any responsibility for any damage, loss, liabilities, injuries, costs, expenses or claims suffered by participants or any third parties arising out of or in connection with the competition and/or accepting a prize.
+Data Protection and Privacy
+Any personal information that participants share with Kitahack 2026 will be kept secure and only used in line with these rules and regulations (such as participant identification) unless the consent has been given by the participant for specific purposes.
+Data Sharing and Consent
+By participating in Kitahack 2026, participants consent to submitting their resumes, which will be shared with event sponsors and partners for recruitment and networking purposes.
+Sponsors may use the resumes for talent scouting, internship or job opportunities, and other professional engagements. However, participants are not guaranteed an offer by submitting their resume.
+KitaHack 2026 organizers will take appropriate measures to store and transmit resumes securely. Sponsors receiving resumes are expected to handle the information responsibly and in compliance with applicable data protection laws.
+Intellectual Property
+Participants retain the intellectual property rights to their projects. However, by participating in KitaHack 2026, teams grant the event organizers a non-exclusive, royalty-free license to showcase and promote their projects for marketing and educational purposes.
+Judging Criteria
+Evaluation Criteria Distribution
+Evaluation Criteria Breakdown for Preliminary Round
+Detailed version: Copy of Kitahack 2026 Prelim Judging Criteria - Google Docs
+CATEGORY A: IMPACT (60%)
+MAX POINTS
+CATEGORIES
+15 POINTS
+Problem Statement & SDG Alignment
+Does the team clearly define the problem statement and establish a strong connection to a Sustainable Development Goal (SDG)?
+Is the team able to implement AI / other technologies to solve problem statements.
+Is the SDG choice well-justified based on real-world needs?
+10 POINTS
+User Feedback & Iteration
+Has the team gathered feedback from real users and described at least three key insights ?
+Have they provided evidence of how they iterated on their solution based on user input?
+5 POINTS
+Success Metrics & Scalability
+Does the team use measurable goals to demonstrate the impact of their solution?
+Have they outlined a clear roadmap for scaling the solution?
+20 POINTS
+AI Integration [Any Google AI Technology is recommended]
+Is AI used in a meaningful way to improve the solution?
+Has the team explained why they chose {} and how it benefits their project?
+EXAMPLES: GOOGLE AI STUDIO, GEMINI, VERTEX AI, etc..
+10 POINTS
+Technology Innovation
+How creative is the project to solve world issues which are related to SDG?
+How do they utilize technologies to solve real world problems?
+CATEGORY B: TECHNOLOGY (20%)
+MAX POINTS
+CRITERIA
+5 POINTS
+Technical Architecture & Google Technologies
+Does the team clearly describe the system architecture , including high-level components and responsibilities ?
+Have they justified their use of Google Cloud, Firebase, Gemini, or other Google products?
+5 POINTS
+Technical Implementation & Challenges
+Has the team successfully implemented all required technical components for their solution?
+Have they highlighted a major technical challenge , explained how they
+resolved it , and described key technical decisions ?
+10 POINTS
+Completeness and Demonstration
+Has the team completed the prototype and been able to demonstrate the prototype.
+The team able to create the functional prototype at least using the low-code platform, real coding would be favorable.
+EXAMPLES: FLUTTER, GITHUB, etc.
+Submission
+Submission Information
+Platform: Google Forms
+Submission Link: TBA
+Submission Period: 20th January 2026 - 28th February 2026
+Submission Components
+Project Description (Mandatory)
+Brief summary of the project, including its purpose and problem statement.
+How it aligns with AI and SDGs.
+Demo Video (Maximum 5 minutes)
+Overview of the project, showcasing its functionality.
+Explaining key features and how Google technologies are integrated.
+Demonstration of the working prototype.
+The youtube video can be either unlisted or public. Private video will not be entertained.
+For every 30-second delay, 1 mark will be deducted.
+Public Link to Code Repository (GitHub, GitLab, or similar platform) or Submission on External Platforms (Flutter, or similar platforms)
+Link to the project’s source code with a clear README file that includes setup instructions.
+Project Documentation (Optional)
+Overview of technologies used, including Google tools.
+Explanation of implementation, innovation, and challenges faced.
+Slides/ Github Readme.md
+Submission Form Responses (Mandatory)
+Problem-Solution Alignment: Clearly describe the challenge the project addresses and how the solution effectively tackles it.
+Google Technology Utilization: Explain which Google technologies were used and why they were chosen—using a cause-and-effect approach to emphasize impact. For example:
+"We used Google Cloud Vision API to analyze environmental pollution levels in real-time. This allowed our system to provide instant feedback, leading to more effective waste management."
+Google Forms Submission Structure
+First Part: Team Details
+Confirm there is at least one member of GDGoC Chapter in the team
+Write member name and chapter name
+Confirm there is at least one Google AI Technology and at least one Google Developer Technology used
+List the Google dev tec
+Team name
+Team leader details (name, year, gender, university, email, contact number, resume)
+Team member details (name, year, gender, university, email, contact number, resume)
+Second Part: Project Details
+Project Name
+Google Technology used
+Github Link/ Prototype Link
+Pitching link (5 mins video)
+Demonstrates a working application and how a user will interact with the solution
+Show effective use of the chosen Google products
+Third Part: Project Evaluation
+Project Setup
+Describe the challenge addressed by your project
+Describe the UN Sustainable Development goal(s) and target(s) chosen for your solution, along with your reasons.
+Implementation
+Describe your team's solution architecture and each component's responsibilities.
+Specify the products and platforms chosen for implementation and explain the reasons. (Please make sure there is at least one Google Developer Technology)
+Feedback / Testing / Iteration
+Walk us through the steps you took to test your solution with real users (outside of your team). Provide three specific feedback points.
+What did you learn from user feedback? How did it enhance your solution? List three specific implementations based on user input.
+Highlight a coding challenge faced during development, including the detail on how you addressed it and the technical decisions made.
+Success And Completion Of Solution
+Describe how your solution addresses the challenge, emphasizing success using metrics, goals, and outcomes.
+What Google technologies are used for tracking usage analytics? Share relevant statistics or, where numbers aren't available, describe your project's impact using cause and effect.
+Scalability / Next Steps
+Outline the future steps for your project and how you plan to expand it for a larger audience.
+Explain how the current technical architecture (or with minor changes) in your solution supports scaling or can be adapted for a larger audience.
+Prizes & Awards
+All participants will receive a certificate of participation, provided the participants have participated under a registered team and submitted their project.
+Prizes will be awarded to all eligible participants after all rounds have been completed.
+Stay tuned for the final prize pool announcement!
+Conclusion
+Welcome aboard, KitaHack 2026 starts now! 🚀
+This is not just about winning prizes, It's your playground to experiment, team up with brilliant minds, and craft tech that actually solves problems using Google's powerful tools 💡. Whether you're diving in to level up your skills, meet awesome people, or tackle challenges that shape tomorrow, we're pumped to see what you'll bring to the table! 🤝
+Keep your energy high 🎯, let your imagination run wild, and soak up everything this experience has to offer. Your breakthrough moment could be just around the corner! 🚀
+Wishing you an incredible run, let's make KitaHack 2026 absolutely legendary! 🔥

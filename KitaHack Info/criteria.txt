@@ -1,0 +1,99 @@
+Category Max Score
+Weak (25%)
+Moderate (50%)
+Good (75%)
+Excellent (100%)
+5-point category
+0-1
+2
+3-4
+5
+10-point category
+0–2
+3–5
+6–7
+8–10
+15-point category
+0–3
+4–7
+8–11
+12–15
+20-point category
+0–5
+6–10
+11–15
+16–20
+No.
+Section
+Description
+Max Score
+Weak (25%)
+Moderate (50%)
+Good (75%)
+Excellent (100%)
+IMPACT (60%)
+1
+Problem Statement & SDG Alignment
+Clarity of problem statement, justification of SDG choice, and use of AI / technology to address real-world needs.
+15 pts
+Problem unclear; SDG poorly defined or incorrect; no meaningful tech usage.
+Problem stated but generic; SDG loosely connected; basic tech mention.
+Clear problem with justified SDG; relevant technology applied.
+Strong, compelling problem; well-justified SDG based on real needs; AI/tech deeply integrated to solve the problem.
+2
+User Feedback & Iteration
+Evidence of real user feedback, identification of at least three insights, and iteration based on feedback.
+10 pts
+No real user feedback; no iteration shown.
+Limited feedback; insights shallow; minimal iteration.
+Clear user feedback with key insights; visible improvements made.
+Strong validation with real users; multiple insights; clear, well-documented iteration process.
+3
+Success Metrics & Scalability
+Use of measurable impact metrics and clarity of scalability roadmap.
+5 pts
+No clear metrics; no scalability plan.
+Basic metrics or vague scalability ideas.
+Clear, measurable goals; reasonable scaling plan.
+Strong impact metrics with data-driven goals; clear, realistic, and scalable roadmap.
+4
+AI Integration (Google AI Recommended)
+Meaningful use of AI and justification of chosen Google AI technology (e.g., Gemini, Vertex AI).
+20 pts
+AI not used or unjustified.
+AI included but adds limited value; weak explanation.
+AI clearly improves solution; technology choice explained.
+AI is core to the solution; strong justification of Google AI choice and clear benefits demonstrated.
+5
+Technology Innovation
+Creativity in solving SDG-related problems and innovative use of technology.
+10 pts
+The solution is generic; minimal innovation.
+Some creative aspects; limited differentiation.
+Innovative approach with effective tech usage.
+Highly creative and original solution; technology used in novel, impactful ways.
+TECHNOLOGIES (20 %)
+6
+Technical Architecture & Google Technologies
+Clarity of system architecture and justification of Google technologies used.
+5 pts
+Architecture unclear; no justification of tech choices.
+Basic architecture shown; limited justification.
+Clear architecture with reasonable tech justification.
+Well-structured architecture; strong, well-reasoned use of Google technologies.
+7
+Technical Implementation & Challenges
+Completeness of implementation and explanation of key technical challenges and decisions.
+5 pts
+Major components missing; challenges not addressed.
+Partial implementation; challenges mentioned briefly.
+Most components implemented; challenges explained.
+Fully implemented solution; major challenges clearly explained with strong technical decisions.
+8
+Completeness & Demonstration
+Completion and demonstration of a functional prototype (low-code or full code).
+10 pts
+No working prototype; unable to demo.
+Partial prototype; limited demo.
+Functional prototype demonstrated successfully.
+Fully functional, polished prototype; strong live demonstration using tools like Flutter, GitHub, etc.

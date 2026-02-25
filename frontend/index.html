@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinAI - Emergency Detection Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <main class="dashboard">
+        <header>
+            <h1>SentinAI</h1>
+            <p>Spatial Fall Detection System</p>
+        </header>
+
+        <section class="status-container" id="statusContainer">
+            <div class="pulse-ring"></div>
+            <div class="status-indicator">
+                <div class="icon-wrapper">
+                    <svg id="statusIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <h2 id="statusText">Monitoring</h2>
+                <p id="timestampText">Last updated: Just now</p>
+            </div>
+            <div class="alert-overlay" id="alertOverlay"></div>
+        </section>
+
+        <section class="nodes-grid">
+            <div class="node-card" id="node-1">
+                <div class="node-header">
+                    <span class="status-dot offline"></span>
+                    <h3>Node 01</h3>
+                </div>
+                <p class="node-status-text">Status: Offline</p>
+            </div>
+            <div class="node-card" id="node-2">
+                <div class="node-header">
+                    <span class="status-dot offline"></span>
+                    <h3>Node 02</h3>
+                </div>
+                <p class="node-status-text">Status: Offline</p>
+            </div>
+            <div class="node-card" id="node-3">
+                <div class="node-header">
+                    <span class="status-dot offline"></span>
+                    <h3>Node 03</h3>
+                </div>
+                <p class="node-status-text">Status: Offline</p>
+            </div>
+        </section>
+
+        <div class="setup-notice">
+            <p>Connect to Firebase Realtime Database in <code>app.js</code> to receive live updates.</p>
+        </div>
+    </main>
+
+    <!-- Configure Firebase mapping here -->
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
