@@ -17,8 +17,19 @@
 
     <main class="dashboard">
         <header>
-            <h1>SentinAI</h1>
-            <p>Spatial Fall Detection System</p>
+            <div class="header-content">
+                <div>
+                    <h1>SentinAI</h1>
+                    <p>Spatial Fall & Motion Detection System</p>
+                </div>
+                <div class="mode-selector">
+                    <label for="modeSelect">Detection Mode:</label>
+                    <select id="modeSelect">
+                        <option value="Falling">Falling</option>
+                        <option value="Motion Detect">Motion Detect</option>
+                    </select>
+                </div>
+            </div>
         </header>
 
         <section class="status-container" id="statusContainer">

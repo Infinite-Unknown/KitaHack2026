@@ -247,6 +247,16 @@ class DataCollectorApp(ctk.CTk):
         
         color = "#2ecc71" if success else "#e67e22" # Using nice hex colors
         self.update_status(msg, color)
+        if success:
+            self.flash_success()
+
+    def flash_success(self):
+        # Briefly flash the background to give a stark visual sign it was saved
+        original_color = self._fg_color
+        self.configure(fg_color="#143621") # Dark green
+        self.after(250, lambda: self.configure(fg_color=original_color))
+        self.after(500, lambda: self.configure(fg_color="#143621"))
+        self.after(750, lambda: self.configure(fg_color=original_color))
 
     def update_status(self, text, color="white"):
         self.status_label.configure(text=text, text_color=color)

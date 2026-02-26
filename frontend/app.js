@@ -1,6 +1,6 @@
 // --- Firebase Integration Example ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB36DBBAE72GaHqEfqlkDvckt4EKGt_Imc",
@@ -22,6 +22,7 @@ const statusText = document.getElementById('statusText');
 const timestampText = document.getElementById('timestampText');
 const statusIcon = document.getElementById('statusIcon');
 const orb1 = document.querySelector('.orb-1');
+const modeSelect = document.getElementById('modeSelect');
 
 // SVG Paths
 const normalPath = "M22 12h-4l-3 9L9 3l-3 9H2";
@@ -44,15 +45,23 @@ function updateStatus(data) {
     }
 
     const isEmergency = statusStr.toLowerCase().includes("emergency");
+    const isMotion = statusStr.toLowerCase().includes("motion");
 
     if (isEmergency) {
-        statusContainer.classList.remove('normal');
+        statusContainer.classList.remove('normal', 'warning');
         statusContainer.classList.add('emergency');
         statusText.textContent = "EMERGENCY DETECTED";
         statusIcon.innerHTML = `<path d="${alertPath}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>`;
         orb1.style.background = 'radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, transparent 70%)';
+    } else if (isMotion) {
+        statusContainer.classList.remove('normal', 'emergency');
+        statusContainer.classList.add('warning');
+        statusText.textContent = "MOTION DETECTED";
+        // Can use the same alert icon or a different one for motion. Using alert for now.
+        statusIcon.innerHTML = `<path d="${alertPath}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>`;
+        orb1.style.background = 'radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%)';
     } else {
-        statusContainer.classList.remove('emergency');
+        statusContainer.classList.remove('emergency', 'warning');
         statusContainer.classList.add('normal');
         statusText.textContent = "Normal Activity";
         statusIcon.innerHTML = `<path d="${normalPath}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>`;
@@ -101,10 +110,33 @@ setInterval(() => {
 }, 8000);
 */
 
-// --- Firebase Listener ---
 const statusRef = ref(db, 'status');
 onValue(statusRef, (snapshot) => {
     const data = snapshot.val();
-    console.log("Firebase Data Received:", data);
+    console.log("Firebase Status Received:", data);
     if (data) updateStatus(data);
 });
+
+// --- Mode Syncing ---
+const modeRef = ref(db, 'mode');
+
+// Listen for mode changes from backend
+onValue(modeRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.mode) {
+        console.log("Firebase Mode sync from backend:", data.mode);
+        if (modeSelect.value !== data.mode) {
+            modeSelect.value = data.mode;
+        }
+    }
+});
+
+// Send mode changes to backend when user changes the dropdown
+modeSelect.addEventListener('change', (e) => {
+    const newMode = e.target.value;
+    console.log("User changing mode to:", newMode);
+    set(modeRef, { mode: newMode })
+        .then(() => console.log('Mode update sent to Firebase successfully'))
+        .catch((error) => console.error('Error updating mode in Firebase:', error));
+});
+
