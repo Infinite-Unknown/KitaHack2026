@@ -1,19 +1,21 @@
 #include <WebServer.h>
 #include <WiFi.h>
+#include <WiFiUdp.h>
 #include <esp_wifi.h>
-
 
 // --- Configuration ---
 const char *ssid = "STEM.MY";
 const char *password = "DR6R3FGQ233";
 
 const String device_id =
-    "ESP32_NODE_3"; // Change for each Node (e.g., ESP32_NODE_2)
+    "ESP32_NODE_4"; // Change for each Node (e.g., ESP32_NODE_2)
 
 WebServer server(80);
+WiFiUDP udp;
 
 unsigned long lastPingTime = 0;
-const int pingInterval = 50; // Ping every 50ms to generate traffic
+const int pingInterval =
+    20; // Broadcast every 20ms to guarantee constant CSI traffic
 
 volatile bool data_ready = false;
 int csi_amplitudes[128];
@@ -88,6 +90,9 @@ void setup() {
   server.begin();
   Serial.println("HTTP Server started on port 80!");
 
+  // Setup UDP for active transmission
+  udp.begin(1234);
+
   // Get the channel of the connected AP
   uint8_t primaryChan = WiFi.channel();
   Serial.print("Router Channel: ");
@@ -126,10 +131,13 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  // Keep connection active by periodically sending a small ping
+  // Actively blast UDP packets to guarantee high-frequency CSI data.
+  // This solves the stuttering/offline false positive issue by creating our own
+  // constant traffic pool!
   if (millis() - lastPingTime > pingInterval) {
-    // We can't easily ping without dropping promiscuous mode,
-    // but the HTTP requests from python will generate enough traffic.
+    udp.beginPacket("255.255.255.255", 1234);
+    udp.write((const uint8_t *)"ping", 4);
+    udp.endPacket();
     lastPingTime = millis();
   }
 }

@@ -6,11 +6,14 @@ import csv
 from datetime import datetime
 import customtkinter as ctk
 
+import concurrent.futures
+
 # ================= Configuration =================
 ESP32_IPS = {
     "ESP32_NODE_1": "192.168.8.168",
     "ESP32_NODE_2": "192.168.8.167",
-    "ESP32_NODE_3": "192.168.8.166"
+    "ESP32_NODE_3": "192.168.8.166",
+    "ESP32_NODE_4": "192.168.8.169"
 }
 
 # The folder where we will save our recorded CSV files
@@ -25,60 +28,88 @@ recorded_data = []
 frames_recorded = 0
 current_fps = 0.0
 last_frame_time = 0
+nodes_online_count = 0
+nodes_status_str = "0/4"
+
+def fetch_csi(node_id, ip):
+    """Fetches CSI from a single node with a strict timeout"""
+    try:
+        resp = requests.get(f"http://{ip}/csi", timeout=0.15)
+        if resp.status_code == 200:
+            parts = resp.text.strip().split(',')
+            if len(parts) >= 11:
+                return node_id, [int(p) for p in parts[1:11]]
+    except Exception:
+        pass
+    return node_id, None
 
 def http_poller(app):
-    """Continuously polls ESP32s in the background, only saves data if recording is active"""
-    global is_recording, recorded_data, frames_recorded
+    """Continuously polls ESP32s concurrently in the background"""
+    global is_recording, recorded_data, frames_recorded, current_fps, last_frame_time, nodes_online_count, nodes_status_str
+    
+    # Thread pool for concurrent requests (prevents 1 slow node from halting others)
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
     
     while True:
-        if is_recording:
-            timestamp = time.time()
-            snapshot = {"timestamp": timestamp, "label": current_label}
-            has_data = False
+        timestamp = time.time()
+        snapshot = {"timestamp": timestamp, "label": current_label}
+        has_data = False
+        online_nodes_list = []
             
-            for node_id, ip in ESP32_IPS.items():
-                if not ip: continue
-                try:
-                    resp = requests.get(f"http://{ip}/csi", timeout=0.2) 
-                    if resp.status_code == 200:
-                        payload = resp.text.strip()
-                        parts = payload.split(',')
-                        
-                        if len(parts) >= 11: # ID + 10 amplitudes
-                            try:
-                                amplitudes = [int(p) for p in parts[1:11]]
-                                snapshot[node_id] = amplitudes
-                                has_data = True
-                            except ValueError:
-                                pass
-                except requests.exceptions.RequestException:
-                    pass # Node offline or timeout
+        # Fire all 3 requests concurrently
+        futures = {executor.submit(fetch_csi, node_id, ip): node_id for node_id, ip in ESP32_IPS.items() if ip}
             
-            # Only save the frame if we actually got data from at least one node
-            if has_data:
-                recorded_data.append(snapshot)
-                frames_recorded += 1
+        for future in concurrent.futures.as_completed(futures):
+            node_id, amplitudes = future.result()
+            if amplitudes:
+                online_nodes_list.append(node_id)
+                if is_recording:
+                    snapshot[node_id] = amplitudes
+                    has_data = True
+        
+        nodes_online_count = len(online_nodes_list)
+        # Sort node list so they always appear in consistent order (e.g. Node 1, Node 2...)
+        online_nodes_list.sort()
+        
+        if online_nodes_list:
+            # e.g "ESP32_NODE_1, ESP32_NODE_3" -> "Node 1, Node 3"
+            clean_names = [n.replace("ESP32_NODE_", "Node ") for n in online_nodes_list]
+            nodes_status_str = f"[{', '.join(clean_names)}]"
+        else:
+            nodes_status_str = "[None]"
+        
+        # Always update the nodes label via app.after
+        app.after(0, app.update_nodes_status, nodes_status_str, nodes_online_count)
+
+        if is_recording and has_data:
+            recorded_data.append(snapshot)
+            frames_recorded += 1
+            
+            # Calculate FPS
+            now = time.time()
+            if last_frame_time > 0:
+                delta = now - last_frame_time
+                if delta > 0:
+                    current_fps = 1.0 / delta
+            last_frame_time = now
+            
+            # Update UI periodically so it doesn't freeze
+            if frames_recorded % 3 == 0:
+                app.after(0, app.update_status, f"🔴 Recording '{current_label}'... ({frames_recorded} frames | {current_fps:.0f} fps)", "red")
                 
-                # Calculate FPS
-                now = time.time()
-                if last_frame_time > 0:
-                    delta = now - last_frame_time
-                    if delta > 0:
-                        current_fps = 1.0 / delta
-                last_frame_time = now
-                
-                # Update UI periodically so it doesn't freeze
-                if frames_recorded % 3 == 0:
-                    app.after(0, app.update_status, f"🔴 Recording '{current_label}'... ({frames_recorded} frames | {current_fps:.0f} fps)", "red")
-                
-        time.sleep(0.05) # Poll ~20 times a second
+        time.sleep(0.02) # Poll faster (~50 times/sec loop)
 
 def save_data_to_csv(label, data):
-    """Saves the recorded session to a CSV file"""
+    """Saves the recorded session to a CSV file inside its own subfolder"""
     if not data:
         return False, "No data recorded! Make sure ESP32s are online."
         
-    filename = f"{DATA_DIR}/{label}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    # Create subfolder based on the label
+    label_dir = os.path.join(DATA_DIR, label)
+    if not os.path.exists(label_dir):
+        os.makedirs(label_dir)
+        
+    filename = os.path.join(label_dir, f"{label}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
     
     # Define CSV headers
     headers = ["timestamp", "label"]
@@ -106,7 +137,7 @@ class DataCollectorApp(ctk.CTk):
         super().__init__()
 
         self.title("SentinAI - CSI Data Collector")
-        self.geometry("450x350")
+        self.geometry("450x400")
         self.resizable(False, False)
         
         # Configure grid
@@ -114,11 +145,15 @@ class DataCollectorApp(ctk.CTk):
 
         # Title
         self.title_label = ctk.CTkLabel(self, text="CSI Data Collector", font=ctk.CTkFont(size=24, weight="bold"))
-        self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.title_label.grid(row=0, column=0, padx=20, pady=(20, 5))
+
+        # Nodes Online Badge
+        self.nodes_label = ctk.CTkLabel(self, text="Nodes Online: 0/4", font=ctk.CTkFont(size=14))
+        self.nodes_label.grid(row=1, column=0, padx=20, pady=(0, 10))
 
         # Label Selection Area
         self.label_frame = ctk.CTkFrame(self)
-        self.label_frame.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
+        self.label_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.label_frame.grid_columnconfigure(1, weight=1)
 
         self.action_lbl = ctk.CTkLabel(self.label_frame, text="Action Label:")
@@ -129,18 +164,23 @@ class DataCollectorApp(ctk.CTk):
         self.action_menu = ctk.CTkOptionMenu(
             self.label_frame, 
             variable=self.action_var,
-            values=["falling", "walking", "sitting", "standing", "waving", "empty_room", "nothing_moving", "Custom"],
+            values=["falling", "walking", "sitting", "standing", "waving", "empty_room", "Custom"],
             command=self.on_label_change
         )
         self.action_menu.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
         # Custom tag entry box (hidden by default)
         self.custom_entry = ctk.CTkEntry(self.label_frame, placeholder_text="Type custom label here...")
-        # Don't grid it yet — only shown when "Custom" is selected
+        
+        # Binary Trigger Checkbox for Custom Labels (hidden by default)
+        self.trigger_var = ctk.BooleanVar(value=False)
+        self.trigger_checkbox = ctk.CTkCheckBox(self.label_frame, text="Is this a Fall/Trigger condition?", variable=self.trigger_var)
+        
+        # Don't grid them yet — only shown when "Custom" is selected
 
         # Start / Stop Buttons
         self.btn_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.btn_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        self.btn_frame.grid(row=3, column=0, padx=20, pady=10, sticky="ew")
         self.btn_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.start_btn = ctk.CTkButton(self.btn_frame, text="▶ START RECORDING", fg_color="green", hover_color="darkgreen", font=ctk.CTkFont(weight="bold"), command=self.start_recording)
@@ -151,21 +191,28 @@ class DataCollectorApp(ctk.CTk):
 
         # Live Status Monitor
         self.status_label = ctk.CTkLabel(self, text="Ready to record. Select a label and press Start.", font=ctk.CTkFont(size=14))
-        self.status_label.grid(row=3, column=0, padx=20, pady=20)
+        self.status_label.grid(row=4, column=0, padx=20, pady=20)
 
     def on_label_change(self, choice):
         if choice == "Custom":
             self.custom_entry.grid(row=1, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="ew")
+            self.trigger_checkbox.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="ew")
         else:
             self.custom_entry.grid_forget()
+            self.trigger_checkbox.grid_forget()
 
     def start_recording(self):
         global is_recording, current_label, recorded_data, frames_recorded, current_fps, last_frame_time
         
         # Priority to custom entry if filled
         custom_val = self.custom_entry.get().strip()
-        if custom_val:
-            current_label = custom_val.replace(" ", "_").lower()
+        if custom_val and self.action_var.get() == "Custom":
+            sanitized = custom_val.replace(" ", "_").lower()
+            # If the checkbox is checked, append '_fall' so the trainer knows to label it 1
+            if self.trigger_var.get():
+                current_label = f"{sanitized}_fall"
+            else:
+                current_label = f"{sanitized}_normal"
         else:
             current_label = self.action_var.get()
 
@@ -179,6 +226,7 @@ class DataCollectorApp(ctk.CTk):
         self.stop_btn.configure(state="normal")
         self.action_menu.configure(state="disabled")
         self.custom_entry.configure(state="disabled")
+        self.trigger_checkbox.configure(state="disabled")
         
         self.update_status(f"🔴 Recording '{current_label}'... (0 frames)", "red")
 
@@ -190,6 +238,7 @@ class DataCollectorApp(ctk.CTk):
         self.stop_btn.configure(state="disabled")
         self.action_menu.configure(state="normal")
         self.custom_entry.configure(state="normal")
+        self.trigger_checkbox.configure(state="normal")
         
         self.update_status("Saving data...", "white")
         
@@ -201,6 +250,11 @@ class DataCollectorApp(ctk.CTk):
 
     def update_status(self, text, color="white"):
         self.status_label.configure(text=text, text_color=color)
+
+    def update_nodes_status(self, status_str, count):
+        total = len(ESP32_IPS)
+        color = "#2ecc71" if count == total else "#e67e22" if count > 0 else "red"
+        self.nodes_label.configure(text=f"Nodes Online: {status_str}", text_color=color)
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("Dark")

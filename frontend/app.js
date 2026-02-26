@@ -66,6 +66,7 @@ function updateStatus(data) {
     updateNodeUI("node-1", nodesData["ESP32_NODE_1"]);
     updateNodeUI("node-2", nodesData["ESP32_NODE_2"]);
     updateNodeUI("node-3", nodesData["ESP32_NODE_3"]);
+    updateNodeUI("node-4", nodesData["ESP32_NODE_4"]);
 }
 
 function updateNodeUI(elementId, status) {

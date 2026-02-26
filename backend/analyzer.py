@@ -8,6 +8,7 @@ import os
 import customtkinter as ctk
 import tensorflow as tf
 from google import genai
+import concurrent.futures
 
 # Initialize Local TF Keras Model
 tf_model = None
@@ -21,11 +22,12 @@ except Exception as e:
 ESP32_IPS = {
     "ESP32_NODE_1": "192.168.8.168",
     "ESP32_NODE_2": "192.168.8.167",
-    "ESP32_NODE_3": "192.168.8.166"
+    "ESP32_NODE_3": "192.168.8.166",
+    "ESP32_NODE_4": "192.168.8.169"
 }
 
 FIREBASE_URL = "https://gen-lang-client-0281295533-default-rtdb.asia-southeast1.firebasedatabase.app/status.json" 
-GEMINI_API_KEY = "AIzaSyCW9Ub5MRtDrvCWhO4yUT01lo-afOPdr00" 
+GEMINI_API_KEY = "AIzaSyC8MRFcBp_YJbvSCFie0r64tEiHa7I58Hc" 
 
 client = None
 if GEMINI_API_KEY:
@@ -33,16 +35,21 @@ if GEMINI_API_KEY:
 
 # ================= Global Variables =================
 BUFFER_LIMIT = 100
-csi_buffers = {
-    "ESP32_NODE_1": [],
-    "ESP32_NODE_2": [],
-    "ESP32_NODE_3": []
-}
+# Store synchronized snapshots: [{"timestamp": t, "ESP32_NODE_1": [10...], ...}]
+synchronized_buffer = []
+
 status_state = "Normal" 
 node_last_seen = {
     "ESP32_NODE_1": 0,
     "ESP32_NODE_2": 0,
-    "ESP32_NODE_3": 0
+    "ESP32_NODE_3": 0,
+    "ESP32_NODE_4": 0
+}
+last_known_features = {
+    "ESP32_NODE_1": [0]*10,
+    "ESP32_NODE_2": [0]*10,
+    "ESP32_NODE_3": [0]*10,
+    "ESP32_NODE_4": [0]*10
 }
 
 # --- NEW: Adjustable Global Setting ---
@@ -80,23 +87,43 @@ def detect_anomaly_local():
         
     if not tf_model:
         return False
-
-    buf1 = csi_buffers.get("ESP32_NODE_1", [])
-    buf2 = csi_buffers.get("ESP32_NODE_2", [])
-    buf3 = csi_buffers.get("ESP32_NODE_3", [])
-    
-    if len(buf1) < 20 or len(buf2) < 20 or len(buf3) < 20:
+        
+    if len(synchronized_buffer) < 20:
         return False
         
     window = []
     # Grab the last 20 frames chronologically
-    for i in range(20, 0, -1):
-        # Flatten the 3 nodes into a 30-feature vector for the ML model
-        frame = list(buf1[-i]) + list(buf2[-i]) + list(buf3[-i])
-        window.append(frame)
+    recent_frames = synchronized_buffer[-20:]
+    
+    for frame in recent_frames:
+        features = []
+        for node in ["ESP32_NODE_1", "ESP32_NODE_2", "ESP32_NODE_3", "ESP32_NODE_4"]:
+            # If a node disconnects, pad with its LAST KNOWN values instead of 0s.
+            # Padding with 0s causes an artificial 'drop' that the model misclassifies as a fall!
+            if node in frame:
+                vals = frame[node]
+                last_known_features[node] = vals
+            else:
+                vals = last_known_features[node]
+                
+            features.extend(vals)
+        window.append(features)
+        
+    # Convert to numpy array for easier smoothing
+    window_np = np.array(window, dtype=np.float32)
+    
+    # ---------------------------------------------------------
+    # Apply a 3-frame moving average across the time dimension
+    # This aggressively smooths out instantaneous hardware spikes
+    # that the Keras model might hallucinate as a sudden "Fall".
+    # ---------------------------------------------------------
+    smoothed_window = np.copy(window_np)
+    for i in range(1, len(window_np) - 1):
+        smoothed_window[i] = (window_np[i-1] + window_np[i] + window_np[i+1]) / 3.0
+    # ---------------------------------------------------------
         
     # Standardize scale
-    input_data = np.array([window], dtype=np.float32) / 255.0
+    input_data = np.array([smoothed_window], dtype=np.float32) / 255.0
     
     try:
         # Predict using full Keras model
@@ -121,9 +148,16 @@ def analyze_with_gemini():
         
     print("Calling Gemini API to analyze CSI pattern...")
     sample_data = ""
-    for node, buf in csi_buffers.items():
-        if len(buf) > 0:
-            avg_snapshots = [str(int(np.mean(snap))) for snap in buf[-10:]]
+    if len(synchronized_buffer) >= 10:
+        recent = synchronized_buffer[-10:]
+        for node in ["ESP32_NODE_1", "ESP32_NODE_2", "ESP32_NODE_3", "ESP32_NODE_4"]:
+            # Get the mean of the 10 subcarriers for each of the last 10 frames
+            avg_snapshots = []
+            for frame in recent:
+                if node in frame:
+                    avg_snapshots.append(str(int(np.mean(frame[node]))))
+                else:
+                    avg_snapshots.append(str(int(np.mean(last_known_features[node]))))
             sample_data += f"{node}: [{','.join(avg_snapshots)}]\n"
 
     system_instruction = """
@@ -132,12 +166,13 @@ def analyze_with_gemini():
     CRITICAL RULES FOR CLASSIFICATION:
     1. FALL: A true fall causes a massive, SYNCHRONIZED disruption across the Wi-Fi field. You will see a sharp, sudden decrease in amplitude across MULTIPLE nodes at the exact same time or in a fast staggering sequence, followed immediately by stillness.
     2. NORMAL: Activities like walking, sitting down, or waving also cause high variance, but the disruption is uncoordinated. Only one node might spike/drop at a time, or the wave pattern will be continuously chaotic without a sudden synchronized flatline. 
+    3. There are 4 ESP32 nodes in the room providing spatial coverage.
     
     You MUST output exactly one word: "FALL" or "NORMAL".
     """
     
     prompt = f"""
-    The following data represents the average CSI amplitude across 3 ESP32 nodes spanning the last 1 second.
+    The following data represents the average CSI amplitude across 4 ESP32 nodes spanning the last 1 second.
     
     EXAMPLES:
     - Example 1 (True Fall): 
@@ -175,35 +210,42 @@ def analyze_with_gemini():
         print(f"Gemini Error: {e}")
         return "Emergency Detected (AI Error)"
 
+def fetch_csi(node_id, ip):
+    """Fetches CSI from a single node with a strict timeout"""
+    try:
+        resp = requests.get(f"http://{ip}/csi", timeout=0.15)
+        if resp.status_code == 200:
+            parts = resp.text.strip().split(',')
+            if len(parts) >= 11:
+                return node_id, [int(p) for p in parts[1:11]]
+    except Exception:
+        pass
+    return node_id, None
+
 def http_poller():
-    print("Starting HTTP polling to ESP32s...")
+    print("Starting synchronized HTTP polling to ESP32s...")
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+    
     while True:
-        for node_id, ip in ESP32_IPS.items():
-            if not ip: continue
-            try:
-                resp = requests.get(f"http://{ip}/csi", timeout=0.5) 
+        timestamp = time.time()
+        snapshot = {"timestamp": timestamp}
+        has_data = False
+        
+        futures = {executor.submit(fetch_csi, node_id, ip): node_id for node_id, ip in ESP32_IPS.items() if ip}
+        
+        for future in concurrent.futures.as_completed(futures):
+            node_id, amplitudes = future.result()
+            if amplitudes:
+                snapshot[node_id] = amplitudes
+                node_last_seen[node_id] = timestamp
+                has_data = True
                 
-                if resp.status_code == 200:
-                    payload = resp.text.strip()
-                    parts = payload.split(',')
-                    
-                    if len(parts) > 10:
-                        parsed_id = parts[0]
-                        try:
-                            amplitudes = [int(p) for p in parts[1:]]
-                        except ValueError:
-                            continue 
-                            
-                        if len(amplitudes) >= 10:
-                            if parsed_id in csi_buffers:
-                                csi_buffers[parsed_id].append(amplitudes[:10])
-                                node_last_seen[parsed_id] = time.time()
-                                
-                                if len(csi_buffers[parsed_id]) > BUFFER_LIMIT:
-                                    csi_buffers[parsed_id].pop(0)
-            except Exception as e:
-                pass 
-        time.sleep(0.1)
+        if has_data:
+            synchronized_buffer.append(snapshot)
+            if len(synchronized_buffer) > BUFFER_LIMIT:
+                synchronized_buffer.pop(0)
+                
+        time.sleep(0.05)
 
 def backend_loop():
     threading.Thread(target=http_poller, daemon=True).start()

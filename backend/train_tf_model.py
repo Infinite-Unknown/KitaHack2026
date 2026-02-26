@@ -12,11 +12,11 @@ MODEL_SAVE_PATH = "csi_fall_model.keras"
 
 # Window size in snapshots
 WINDOW_SIZE = 20
-NUM_FEATURES = 30  # 10 subcarriers * 3 nodes
+NUM_FEATURES = 40  # 10 subcarriers * 4 nodes
 STRIDE = 2  # Smaller stride = more overlapping windows = more training data
 
 NODE_SUB_COLS = []
-for node in ["ESP32_NODE_1", "ESP32_NODE_2", "ESP32_NODE_3"]:
+for node in ["ESP32_NODE_1", "ESP32_NODE_2", "ESP32_NODE_3", "ESP32_NODE_4"]:
     for i in range(10):
         NODE_SUB_COLS.append(f"{node}_sub_{i}")
 
@@ -50,7 +50,7 @@ def load_data():
     X = []
     y = []
 
-    files = glob.glob(os.path.join(DATASET_DIR, "*.csv"))
+    files = glob.glob(os.path.join(DATASET_DIR, "**", "*.csv"), recursive=True)
     print(f"Found {len(files)} CSV files.\n")
 
     fall_count = 0
