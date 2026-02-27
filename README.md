@@ -24,7 +24,7 @@ This repository contains all code related to SentinAI.
 ---
 
 ## 👥 About our team
-The Trio is a team dedicated to solve problems in unique ways using technology. We explore how different implementations of technology can elminate different issues that people face around the globe. 
+The 3rio is a team dedicated to solve problems in unique ways using technology. We explore how different implementations of technology can elminate different issues that people face around the globe. 
 
 Our team consists of: 
 
