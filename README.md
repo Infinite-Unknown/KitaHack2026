@@ -2,6 +2,27 @@
 
 This repository contains all code related to SentinAI.
 
+## 📚 Table of Contents
+1. [👥 About our team](#-about-our-team)
+2. [📋 Project overview](#-project-overview)
+   - [❗ Problem statement](#-problem-statement)
+   - [💡 Solution](#-solution)
+   - [🌍 SDG alignment](#-sdg-alignment)
+3. [✨ Key features](#-key-features)
+4. [🛠️ Technologies used](#️-technologies-used)
+   - [🔵 Google technologies](#-google-technologies)
+   - [🔧 Other technologies used](#-other-technologies-used)
+5. [🏗️ Project Workflow](#️-project-workflow)
+6. [🚀 Installation and setup](#-installation-and-setup)
+   - [📦 Prerequisites](#-prerequisites)
+   - [⚙️ Backend](#️-backend)
+   - [📡 ESP32 Nodes](#-esp32-nodes)
+   - [📱 Frontend](#-frontend)
+7. [⚠️ Challenges Faced](#️-challenges-faced)
+8. [🗺️ Future roadmap](#️-future-roadmap)
+
+---
+
 ## 👥 About our team
 The Trio is a team dedicated to solve problems in unique ways using technology. We explore how different implementations of technology can elminate different issues that people face around the globe. 
 
@@ -10,6 +31,8 @@ Our team consists of:
 1. Jia Hern (Backend programmer)
 2. Ruben Lim (Frontend programmer)
 3. Jun Ian (Debugging, documentation)
+
+---
 
 ## 📋 Project overview
 ### ❗ Problem statement
@@ -30,6 +53,8 @@ This project is aligned with SDG 3 (Good health and well-being). By deploying th
 
 This project is also aligned with SDG 16 (Peace, justice and strong institutions). SentinAI can be deployed in peacekeeping missions that require stealthy detection of enemy movement, such as detecting terrorist movements even when they are hidden.
 
+---
+
 ## ✨ Key features
 - ### 📡 Privacy-Respecting Surveillance
     SentinAI uses WiFi-based Channel State Information (CSI) tracking instead of cameras, allowing it to monitor spaces like bathrooms and bedrooms without compromising privacy.
@@ -48,6 +73,8 @@ This project is also aligned with SDG 16 (Peace, justice and strong institutions
 
 - ### 🔧 Flexible Deployment
     The system supports multiple ESP32 nodes that work together via triangulation, making it adaptable to spaces of different sizes and layouts.
+
+---
 
 ## 🛠️ Technologies used
 ### 🔵 Google technologies:
