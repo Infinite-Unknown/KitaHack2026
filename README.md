@@ -177,13 +177,21 @@ Ensure that you have the following software and hardware needed:
 
 ---
 ## ⚠️ Challenges Faced
-**Model deployment**: The detection model was originally planned to be run locally, however due to time and technical constraints it was migrated to using Gemini as our detection model.
+**Model Deployment**: Due to time and technical constraints, the detection model was migrated from local inference to Gemini.
 
-**CSI data synchronization**: Ensuring that CSI data from all 4 ESP32 nodes was captured and processed in sync proved challenging, as network latency between nodes could skew the spatial buffer and affect detection accuracy.
+- Solution: Explore lightweight architectures (TFLite, ONNX) or INT8 quantization for on-device inference with Gemini as a cloud fallback. Automate model updates via CI/CD pipelines (GitHub Actions).
 
-**Threshold tuning**: Finding the right anomaly score threshold for the Keras model required extensive trial and error, as a threshold too low would cause frequent false positives, while one too high risked missing genuine incidents.
+**CSI Data Synchronization**: Network latency across the 4 ESP32 nodes caused synchronization issues, skewing the spatial buffer and affecting detection accuracy.
 
-**Mobile porting**: Multiple issues were encountered when porting the frontend to mobile devices, some of which are still undergoing fixing as of writing.
+- Solution: Sync nodes using NTP/PTP for millisecond-level alignment. Apply buffering and interpolation (linear or Kalman filtering) to handle latency, or use a local gateway to aggregate and timestamp data before transmission.
+
+**Threshold Tuning**: Finding the optimal anomaly score threshold for the Keras model required extensive trial and error — too low caused false positives, too high risked missing real incidents.
+
+- Solution: Replace manual tuning with grid search or Bayesian optimization. Apply dynamic thresholding (moving averages, SPC) and expand validation datasets with edge cases to improve accuracy.
+
+**Mobile Porting**: Several issues were encountered when porting the frontend to mobile, some of which remain unresolved at time of writing.
+
+- Solution: Use Flutter's responsive widgets and test across screen sizes. Automate device testing via Firebase Test Lab and refactor UI into reusable widgets for easier cross-platform maintenance.
 
 ## 🗺️ Future roadmap
 While the current primary focus is healthcare and elderly monitoring, the core technology of spatial disruption detection using Wi-Fi signals has vast future potential:
