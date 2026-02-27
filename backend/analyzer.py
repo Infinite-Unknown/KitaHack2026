@@ -19,11 +19,13 @@ except Exception as e:
     print(f"Warning: Could not load TF Keras model: {e}")
 
 # ================= Configuration =================
+# Fallback to static IPs as requested. 
+# Note: These are the CURRENT IPs found on your network right now. Node 1 is offline.
 ESP32_IPS = {
-    "ESP32_NODE_1": "192.168.8.168",
-    "ESP32_NODE_2": "192.168.8.167",
-    "ESP32_NODE_3": "192.168.8.166",
-    "ESP32_NODE_4": "192.168.8.169"
+    "ESP32_NODE_1": "192.168.8.162",
+    "ESP32_NODE_2": "192.168.8.163",
+    "ESP32_NODE_3": "192.168.8.164",
+    "ESP32_NODE_4": "192.168.8.166"
 }
 
 FIREBASE_URL = "https://gen-lang-client-0281295533-default-rtdb.asia-southeast1.firebasedatabase.app/status.json" 
@@ -285,13 +287,14 @@ def analyze_with_gemini():
         return "Emergency Detected (AI Error)" if CURRENT_MODE == "Falling" else "Motion Detected (AI Error)"
 
 def fetch_csi(node_id, ip):
-    """Fetches CSI from a single node with a strict timeout"""
+    """Fetches CSI from a single IP with a strict timeout, returning the true Node ID"""
     try:
         resp = requests.get(f"http://{ip}/csi", timeout=0.15)
         if resp.status_code == 200:
             parts = resp.text.strip().split(',')
             if len(parts) >= 11:
-                return node_id, [int(p) for p in parts[1:11]]
+                real_node_id = parts[0]
+                return real_node_id, [int(p) for p in parts[1:11]]
     except Exception:
         pass
     return node_id, None
@@ -309,7 +312,7 @@ def http_poller():
         
         for future in concurrent.futures.as_completed(futures):
             node_id, amplitudes = future.result()
-            if amplitudes:
+            if node_id and amplitudes:
                 snapshot[node_id] = amplitudes
                 node_last_seen[node_id] = timestamp
                 has_data = True
