@@ -8,12 +8,17 @@ const char *ssid = "STEM.MY";
 const char *password = "DR6R3FGQ233";
 
 const String device_id =
-    "ESP32_NODE_4"; // Change for each Node (e.g., ESP32_NODE_2)
+    "ESP32_NODE_3"; // Change for each Node (e.g., ESP32_NODE_2)
+
+// Built-in LED pin (GPIO 33 for ESP32-CAM, GPIO 2 for standard ESP32)
+// ESP32-CAM uses inverted logic for GPIO 33 (LOW = ON, HIGH = OFF)
+const int LED_PIN = 33;
 
 WebServer server(80);
 WiFiUDP udp;
 
 unsigned long lastPingTime = 0;
+unsigned long lastRequestTime = 0; // Track when we last received a request
 const int pingInterval =
     20; // Broadcast every 20ms to guarantee constant CSI traffic
 
@@ -66,12 +71,21 @@ void handleCsiRequest() {
 
   server.send(200, "text/plain", payload);
   data_ready = false; // allow next packet to be captured
+
+  // Update LED status
+  lastRequestTime = millis();
+  digitalWrite(LED_PIN, LOW); // Turn ON LED (ESP32-CAM is inverted)
+
   Serial.println("Served CSI data to client!");
 }
 
 void setup() {
   Serial.begin(115200);
   Serial.println("\n--- SentinAI ESP32 CSI HTTP Server ---");
+
+  // Setup LED
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, HIGH); // Turn OFF LED initially
 
   // Connect to Wi-Fi
   WiFi.mode(WIFI_STA);
@@ -139,5 +153,10 @@ void loop() {
     udp.write((const uint8_t *)"ping", 4);
     udp.endPacket();
     lastPingTime = millis();
+  }
+
+  // Turn off LED if we haven't received a request in 1 second
+  if (millis() - lastRequestTime > 1000) {
+    digitalWrite(LED_PIN, HIGH); // Turn OFF LED
   }
 }

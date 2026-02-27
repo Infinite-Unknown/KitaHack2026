@@ -9,11 +9,13 @@ import customtkinter as ctk
 import concurrent.futures
 
 # ================= Configuration =================
+# Fallback to static IPs as requested. 
+# Note: These are the CURRENT IPs found on your network right now. Node 1 is offline.
 ESP32_IPS = {
-    "ESP32_NODE_1": "192.168.8.168",
-    "ESP32_NODE_2": "192.168.8.167",
-    "ESP32_NODE_3": "192.168.8.166",
-    "ESP32_NODE_4": "192.168.8.169"
+    "ESP32_NODE_1": "192.168.8.162",
+    "ESP32_NODE_2": "192.168.8.163",
+    "ESP32_NODE_3": "192.168.8.164",
+    "ESP32_NODE_4": "192.168.8.166"
 }
 
 # The folder where we will save our recorded CSV files
@@ -32,13 +34,14 @@ nodes_online_count = 0
 nodes_status_str = "0/4"
 
 def fetch_csi(node_id, ip):
-    """Fetches CSI from a single node with a strict timeout"""
+    """Fetches CSI from a single IP with a strict timeout, returning the true Node ID."""
     try:
         resp = requests.get(f"http://{ip}/csi", timeout=0.15)
         if resp.status_code == 200:
             parts = resp.text.strip().split(',')
             if len(parts) >= 11:
-                return node_id, [int(p) for p in parts[1:11]]
+                real_node_id = parts[0]
+                return real_node_id, [int(p) for p in parts[1:11]]
     except Exception:
         pass
     return node_id, None
@@ -56,12 +59,12 @@ def http_poller(app):
         has_data = False
         online_nodes_list = []
             
-        # Fire all 3 requests concurrently
+        # Fire requests to all configured static IPs concurrently
         futures = {executor.submit(fetch_csi, node_id, ip): node_id for node_id, ip in ESP32_IPS.items() if ip}
             
         for future in concurrent.futures.as_completed(futures):
             node_id, amplitudes = future.result()
-            if amplitudes:
+            if node_id and amplitudes:
                 online_nodes_list.append(node_id)
                 if is_recording:
                     snapshot[node_id] = amplitudes
@@ -263,7 +266,7 @@ class DataCollectorApp(ctk.CTk):
 
     def update_nodes_status(self, status_str, count):
         total = len(ESP32_IPS)
-        color = "#2ecc71" if count == total else "#e67e22" if count > 0 else "red"
+        color = "#2ecc71" if count >= total else "#e67e22" if count > 0 else "red"
         self.nodes_label.configure(text=f"Nodes Online: {status_str}", text_color=color)
 
 if __name__ == "__main__":
