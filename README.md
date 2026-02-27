@@ -87,10 +87,10 @@ This project is also aligned with SDG 16 (Peace, justice and strong institutions
 - ### 🧠 Tensorflow
     The AI model is built with TensorFlow & Keras, implementing a 1D CNN architecture for time-series anomaly detection.
 
-## 🔧 Other technologies used
 - ### 💙 Flutter
     We chose Flutter as our framework of choice for our frontend. Flutter is a simple yet robust framework that allows us to deploy to multiple platforms using a single codebase.
 
+## 🔧 Other technologies used
 - ### 🤝 Github Copilot
     Github Copilot has assisted us in creating the frontend code. Using Github Copilot, we cut a lot of time spent on boilerplate code and used the time for other productive tasks.
 
