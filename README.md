@@ -1,71 +1,84 @@
-# SentinAI - Spatial Fall & Motion Detection System
+# SentinAI Client
+This is the repository for SentiAI's frontend. 
 
-SentinAI is an advanced, non-intrusive spatial tracking and activity monitoring system built for privacy-preserving applications. By leveraging Wi-Fi Channel State Information (CSI) across multiple ESP32 nodes, SentinAI can detect major environmental disruptions like human falls or general motion without using any cameras.
+SentiAI consists of this frontend and other backend functions.
 
-## 🎯 Goals
-- **Elderly Care & Monitoring:** To provide a reliable, camera-free fall detection system for the elderly, especially in highly private spaces like bathrooms or bedrooms where cameras are intrusive.
-- **Emergency Response:** Ensure that in the event of a dangerous fall, the system can automatically flag emergencies and alert caregivers to contact emergency services immediately.
-- **Privacy First:** By using only Wi-Fi signals (CSI) instead of video feeds, absolute privacy is guaranteed while maintaining safety.
+## About our team
+The Trio is a team dedicated to solve problems in unique ways using technology. We explore with how different implementations of technology can elminate different issues that people face around the globe. 
 
-## 🔭 Vision & Future
-While the current primary focus is healthcare and elderly monitoring, the core technology of spatial disruption detection using Wi-Fi signals has vast future potential:
-- **Military & Tactical Applications:** The ability to sense movement through walls and in low-light environments without direct line-of-sight opens up possibilities for tactical room-clearing, hostage rescue, and perimeter security.
-- **Smart Home Automation:** Expanding from emergency detection to robust gesture recognition and presence detection without wearing any devices.
+Our team consists of: 
 
----
+1. Jia Hern (Backend programmer)
+2. Ruben Lim (Frontend programmer)
+3. Jun Ian (Debugging, documentation)
 
-## ⚙️ Tech Stack & Equipments
+## Project overview
+### Problem statement
+CCTV cameras have proven to be effective in preventing accidents and bullying cases. However, private areas, such as bathrooms, have long been a blind spot for such surveillance. 
 
-### Equipment
-- **ESP32 Microcontrollers:** 4x ESP32 nodes (acting as spatial sensors capturing CSI data).
-- **Wi-Fi Router:** Standard home Wi-Fi router generating the signal field.
-- **Server/PC:** A local machine running the backend aggregation and machine learning models.
+### Solution
 
-### Tech Stack
-- **Hardware/Firmware:** C++ (Arduino Core for ESP32), FreeRTOS.
-- **Backend Analytics:** Python, Flask/Requests, Firebase Admin.
-- **Machine Learning:** TensorFlow & Keras (1D CNN for time-series anomaly detection).
-- **AI Verification:** Google Gemini 2.5 Flash API (LLM for complex pattern confirmation).
-- **Frontend Dashboard:** HTML, CSS, JavaScript (connecting to Firebase Realtime Database).
-- **Data Collection UI:** CustomTkinter (Python GUI).
+SentiAI is a system that detects and prevents accidents in spots not typically covered by CCTV cameras, including bathrooms, bedrooms and more. 
 
----
+It achieves this via Channel State Information (CSI) tracking, which uses WiFi signals to track a person's actions. This works even through walls, which solves the problem of surveillance not reaching blind spots.
 
-## 🔄 Project Workflow
+To acheive CSI tracking, several nodes are place around an area. These nodes are ESP32 devices, which work together to capture the person's movements through triangulation.
 
-SentinAI operates on a robust, multi-stage pipeline:
+The movements are then sent to a cloud AI model to determine their actions. If the AI detects certain accidental movements, such as falling, slipping or bullying actions, the user will be notified through the frontend. 
 
-1. **Signal Generation & Capture (The ESP32 Layer)**
-   - The ESP32 nodes (`esp32_csi_sender`) are configured in promiscuous mode to intercept raw Wi-Fi packets.
-   - To guarantee constant Wi-Fi traffic, the nodes actively broadcast UDP "ping" packets.
-   - The hardware calculates the amplitude of the subcarriers (CSI representations) and serves this formatted data over an HTTP endpoint.
+### SDG alignment
+This project is aligned with SDG 3 (Good health and well-being). By deploying this project, we hope to safeguard the elderly from the unexpected. We also hope to protect students around the world from bullying. 
 
-2. **Data Collection & Training (The Setup Phase)**
-   - `train/data_collector.py` provides a GUI to record CSI data from the 4 nodes simultaneously. It allows researchers to label activities (e.g., "falling", "walking", "empty_room") and save them as synchronized CSV files.
-   - `backend/train_tf_model.py` uses this CSV dataset to train a lightweight 1D Convolutional Neural Network (CNN). By analyzing sliding windows of the multivariate time-series data, the model learns the specific spatial perturbations indicative of a fall or significant motion.
+This project is also aligned with SDG 
 
-3. **Backend Polling & Edge ML (The Core Execution)**
-   - Start the core system via `backend/analyzer.py`.
-   - A background thread concurrently polls all 4 ESP32 nodes at high frequency to maintain a synchronized spatial buffer of the room.
-   - The buffer is smoothed and passed into the locally hosted Keras model.
-   - The Edge ML model evaluates the incoming frames. If the anomaly score (probability of a fall/motion) crosses a customizable threshold, a local trigger is tripped.
+## Key features
 
-4. **Gemini AI Verification (The Brains)**
-   - If the local Keras model suspects a fall, it sends the recent 1-second synchronized CSI amplitude matrix to the **Google Gemini 2.5 Flash API**.
-   - With strict system instructions, Gemini acts as the ultimate verifier. It checks for the hallmark sign of a true fall: a massive, synchronized disruption across multiple nodes followed by immediate stillness.
-   - Gemini responds with `FALL`, `MOTION`, or `NORMAL`, effectively filtering out localized hardware noise and reducing false positives.
+## Technologies used
+### Google technologies:
+- ### Firebase
+    Firebase is used to transmit data to and from the backend to the client. It is also used to communicate to the ESP32 nodes.
 
-5. **Realtime Frontend Alerts (The Output)**
-   - Based on Gemini's verdict, the backend updates the system state (`"Normal"`, `"Emergency Detected"`) in a **Firebase Realtime Database**.
-   - The frontend (`frontend/index.html` & `app.js`) listens for these Firebase state changes, immediately alerting users via the glowing UI dashboard if an emergency event occurs.
+- ### Gemini
+    Google's Gemini model is used to analyze the movement positions, as it has been tested to work well with images.
 
----
+- ### Tensorflow
+    The AI model was first trained with Tensorflow, using a mix of locally generated data and other public data sources.
 
-## 🚀 Getting Started
+## Other technologies used
+- ### Flutter
+    We chose Flutter as our framework of choice for our frontend. Flutter is a simple yet robust framework that allows us to deploy to multiple platforms using a single codebase.
 
-1. **Flash ESP32s:** Flash the `esp32_csi_sender.ino` to your 4 ESP32 boards. Ensure the `device_id` and Wi-Fi credentials match your environment.
-2. **Setup Python Environment:** `pip install -r backend/requirements.txt`
-3. **Configure IP Addresses:** Edit `ESP32_IPS` in `backend/analyzer.py` and `train/data_collector.py` with the IPs of your ESP32 boards.
-4. **(Optional) Train Model:** Run `data_collector.py` to get samples, then run `train_tf_model.py` to generate your `csi_fall_model.keras`.
-5. **Run System:** Execute `backend/analyzer.py` to start monitoring.
-6. **View Dashboard:** Open `frontend/index.html` in your browser.
+- ### Github Copilot
+    Github Copilot has assisted us in creating the frontend code. Using Github Copilot, we cut a lot of time spent on boilerplate code and used the time for other productive tasks.
+
+- ### Tkinter
+    Tkinter is used on the Python backend as a simple UI to control the sensitivity of the AI model.
+
+## System architecture
+
+## Challenges Faced
+The detection model was originally planned to be run locally, however due to time and technical constraints it was migrated to using Gemini as our detection model.
+
+There were multiple issues faced when porting the frontend to mobile devices, some of which are still undergoing fixing as of writing.
+
+## Prerequisites
+Ensure that you have the following software and hardware needed:
+
+**Hardware**:
+
+1. 4x ESP32 modules
+2. Local WiFi network with WiFi Router
+
+**Software**:
+
+1. Python 3.13+
+2. Flutter 3.41+
+3. Arduino IDE with ESP32 board configs installed
+
+## Installation and setup
+1. Clone the repository: `git clone --recursive https://github.com/Infinite-Unknown/KitaHack2026.git`
+2. Flash the ESP32s with `esp32_csi_sender/esp32_csi_sender.ino` using the Arduino IDE
+    - Note: When flashing, 
+
+## Future roadmap
+someone pls help
