@@ -28,9 +28,9 @@ The 3rio is a team dedicated to solve problems in unique ways using technology. 
 
 Our team consists of: 
 
-1. Jia Hern (Backend programmer)
-2. Ruben Lim (Frontend programmer)
-3. Jun Ian (Debugging, documentation)
+1. Wong Jia Hern (Backend programmer)
+2. Lim Zhan Xuan (Frontend programmer)
+3. Hiew Jun Ian (Debugging, documentation)
 
 ---
 
