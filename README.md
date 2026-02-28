@@ -149,7 +149,8 @@ Ensure that you have the following software and hardware needed:
 
     1. [Python 3.13+](https://www.python.org/downloads/)
     2. [Flutter 3.41+](https://docs.flutter.dev/install)
-    3. [Arduino IDE](https://www.arduino.cc/en/software/) with ESP32 board configurations installed.
+    3. [Arduino IDE](https://www.arduino.cc/en/software/)
+    4. [Espressif ESP32 libraries](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)
 
 ---
 
@@ -165,15 +166,22 @@ Ensure that you have the following software and hardware needed:
 
 2. ### 📡 ESP32 Nodes
     1. Open `esp32_csi_sender/esp32_csi_sender.ino` in the Arduino IDE and make the following changes:
-        - **Lines 7 & 8** — Enter your WiFi network name and password
-        - **Line 11** — Set a unique node ID for each ESP32
+        - **Lines 7 & 8** — Enter your WiFi network name (SSID) and password
+        - **Line 11** — Set a unique node ID for each ESP32 (e.g. ESP32_NODE_2)
     2. Flash the updated sketch onto each of your ESP32 devices using the Arduino IDE.
-    3. Once flashed, connect each ESP32 to a power source and position them around the area you wish to monitor.
+    3. Once flashed, connect each ESP32 to a power source and position them around the area you wish to monitor. 
+       (ESP32 are recommended to be placed at different height for data variety for better model outcome.)
 
-3. ### 📱 Frontend
-    1. Navigate to the frontend directory: `cd frontend/wifisentinel`
+3a. ### 📱 Frontend
+    1. Navigate to the frontend flutter directory: `cd frontend/wifisentinel`
     2. Fetch and install the required dependencies: `flutter pub get`
     3. Launch the app: `flutter run lib/main.dart`
+  
+3b. ### Frontend (Fallback)
+    1. VSCODE install extension [live server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+    2. Navigate to the frontend directory: `cd frontend`
+    3. Right click html and select `Open with live server`
+    4. You should be redirected to the website.
 
 ---
 ## ⚠️ Challenges Faced
