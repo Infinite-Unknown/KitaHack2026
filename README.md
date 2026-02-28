@@ -206,3 +206,9 @@ While the current primary focus is healthcare and elderly monitoring, the core t
 
 - **Peacekeeping & Tactical Applications**: The ability to sense movement through walls and in low-light environments without direct line-of-sight opens up possibilities for tactical room-clearing, hostage rescue, and perimeter security.
 - **Smart Home Automation**: Expanding from emergency detection to robust gesture recognition and presence detection without wearing any devices.
+
+## Future upgrade plan
+- ESP32 add antennas for better seperating noises.
+- Camera intergration to include memory and label people with face recognition for position tracking and even 3D rendering.
+- Reinforced learning (custom world, dummy and physics to remove the need of manual data collection)
+- Drone attached ESP32 for height and also outdoor node placement.
