@@ -172,12 +172,12 @@ Ensure that you have the following software and hardware needed:
     3. Once flashed, connect each ESP32 to a power source and position them around the area you wish to monitor. 
        (ESP32 are recommended to be placed at different height for data variety for better model outcome.)
 
-3a. ### 📱 Frontend
+3. ### 📱 Frontend
     1. Navigate to the frontend flutter directory: `cd frontend/wifisentinel`
     2. Fetch and install the required dependencies: `flutter pub get`
     3. Launch the app: `flutter run lib/main.dart`
   
-3b. ### Frontend (Fallback)
+   ### Frontend (Fallback)
     1. VSCODE install extension [live server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
     2. Navigate to the frontend directory: `cd frontend`
     3. Right click html and select `Open with live server`
