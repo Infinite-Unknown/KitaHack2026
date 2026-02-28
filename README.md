@@ -28,7 +28,7 @@ The 3rio is a team dedicated to solve problems in unique ways using technology. 
 
 Our team consists of: 
 
-1. Wong Jia Hern (Backend programmer)
+1. Wong Jia Hern (Backend, hardware, web programmer)
 2. Lim Zhan Xuan (Frontend programmer)
 3. Hiew Jun Ian (Debugging, documentation)
 
@@ -84,16 +84,16 @@ This project is also aligned with SDG 16 (Peace, justice and strong institutions
 - ### 🤖 Gemini
     Google's Gemini 2.5 Flash API is used as an LLM to verify complex movement patterns detected by the primary model.
 
-- ### 🧠 Tensorflow
+- ### 🧠 Tensorflow (Flask)
     The AI model is built with TensorFlow & Keras, implementing a 1D CNN architecture for time-series anomaly detection.
 
 - ### 💙 Flutter
     We chose Flutter as our framework of choice for our frontend. Flutter is a simple yet robust framework that allows us to deploy to multiple platforms using a single codebase.
 
-## 🔧 Other technologies used
-- ### 🤝 Github Copilot
-    Github Copilot has assisted us in creating the frontend code. Using Github Copilot, we cut a lot of time spent on boilerplate code and used the time for other productive tasks.
+- ### 🔷 Antigravity
+    Allowed us to quickly run through rapid application development cycles and supercharged our progress by generating tools to help with visualising and translating received raw data.
 
+## 🔧 Other technologies used
 - ### 🖼️ CustomTkinter
     CustomTkinter is used as the data collection UI, providing a Python-based GUI for controlling the data gathering process.
 
@@ -116,7 +116,7 @@ SentinAI operates on a robust, multi-stage pipeline:
 
 2. **Data Collection & Training (The Setup Phase)**
    - `train/data_collector.py` provides a GUI to record CSI data from the 4 nodes simultaneously. It allows researchers to label activities (e.g., "falling", "walking", "empty_room") and save them as synchronized CSV files.
-   - `backend/train_tf_model.py` uses this CSV dataset to train a lightweight 1D Convolutional Neural Network (CNN). By analyzing sliding windows of the multivariate time-series data, the model learns the specific spatial perturbations indicative of a fall or significant motion.
+   - `train/train_model.py` uses this CSV dataset to train a lightweight 1D Convolutional Neural Network (CNN). By analyzing sliding windows of the multivariate time-series data, the model learns the specific spatial perturbations indicative of a fall or significant motion.
 
 3. **Backend Polling & Edge ML (The Core Execution)**
    - Start the core system via `backend/analyzer.py`.
@@ -160,7 +160,7 @@ Ensure that you have the following software and hardware needed:
     2. **HIGHLY RECOMMENDED**: Create and activate a virtual environment to keep dependencies isolated: `python3 -m venv ./backend && source ./backend/bin/activate`
     3. Install the required Python libraries: `pip3 install -r ./backend/requirements.txt`
     4. Open `backend/analyzer.py` and `train/data_collector.py`, then update the `ESP32_IPS` variable with the IP addresses of your ESP32 devices.
-    5. *(Optional)* To train your own model, run `data_collector.py` to gather samples, then run `train_tf_model.py` to produce a `csi_fall_model.keras` file.
+    5. *(Optional)* To train your own model, run `data_collector.py` to gather samples, then run `train_model.py` to produce a `csi_fall_model.keras` file.
     6. You're all set! Start the backend by running: `python3 ./backend/analyzer.py`
 
 2. ### 📡 ESP32 Nodes
