@@ -84,7 +84,7 @@ This project is also aligned with SDG 16 (Peace, justice and strong institutions
 - ### 🤖 Gemini
     Google's Gemini 2.5 Flash API is used as an LLM to verify complex movement patterns detected by the primary model.
 
-- ### 🧠 Tensorflow (Flask)
+- ### 🧠 Tensorflow (Keras)
     The AI model is built with TensorFlow & Keras, implementing a 1D CNN architecture for time-series anomaly detection.
 
 - ### 💙 Flutter
